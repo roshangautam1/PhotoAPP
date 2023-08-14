@@ -15,18 +15,14 @@ import java.io.IOException
 
 
 class MainActivity : AppCompatActivity() {
-
     private val PICK_IMAGE_REQUEST = 1
     private val MAX_IMAGE_COUNT = 2
-
     private lateinit var sizeEditText: EditText
     private lateinit var selectImageButton: Button
     private lateinit var generateButton: Button
     private lateinit var recyclerView: RecyclerView
     private lateinit var imageAdapter: ImageAdapter
-
     private val selectedImages = ArrayList<Bitmap?>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -37,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
-        imageAdapter = ImageAdapter(ArrayList()) // Initialize with an empty list
+        imageAdapter = ImageAdapter(ArrayList())
         recyclerView.adapter = imageAdapter
 
         selectImageButton.setOnClickListener { openGallery() }
@@ -89,8 +85,7 @@ class MainActivity : AppCompatActivity() {
         val size = sizeEditText.text.toString().toIntOrNull() ?: 0
         val resultList = ArrayList<Bitmap?>()
 
-        val triangularPositions = calculateTriangularPositions(size)
-
+        val triangularPositions = calculateTriangularPositions(21)
         val dogImage = selectedImages[0]
         val catImage = selectedImages.getOrNull(1)
 
@@ -98,7 +93,7 @@ class MainActivity : AppCompatActivity() {
         var currentPosition = 1
 
         for (i in 1..size) {
-            if (currentPosition in triangularPositions || triangularPositions.size <= 21) {
+            if (currentPosition in triangularPositions) {
                 resultList.add(dogImage)
                 dogIndex++
             } else {
@@ -111,16 +106,18 @@ class MainActivity : AppCompatActivity() {
         imageAdapter.notifyDataSetChanged()
     }
 
-    private fun calculateTriangularPositions(size: Int): Set<Int> {
-        val positions = mutableSetOf<Int>()
-        var triangularNumber = 0
-        var currentPosition = 0
+    private fun calculateTriangularPositions(n: Int): Set<Int> {
+        val triangularPositions = HashSet<Int>()
+        var currentPosition = 1
+        var currentTriangular = 1
 
-        for (i in 1..size) {
-            triangularNumber += i
-            positions.add(triangularNumber)
+        while (currentTriangular <= n) {
+            triangularPositions.add(currentTriangular)
+            currentPosition++
+            currentTriangular = currentPosition * (currentPosition + 1) / 2
         }
-        return positions
+
+        return triangularPositions
     }
 
 }
